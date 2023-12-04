@@ -155,17 +155,17 @@ def task_page():
     st.button('Main menu', on_click=navigate_to_options)
 
 # Initialize state session
-if "page" not in st.session_state:
-    st.session_state["page"] = "main"
-if "data" not in st.session_state:
-    st.session_state["data"] = None
-if "task" not in st.session_state:
-    st.session_state['task'] = None
+# if "page" not in st.session_state:
+#     st.session_state["page"] = "main"
+# if "data" not in st.session_state:
+#     st.session_state["data"] = None
+# if "task" not in st.session_state:
+#     st.session_state['task'] = None
 
-# Page routing
-if st.session_state["page"] == "main":
-    main()
-elif st.session_state['page'] == 'options':
-    options()
-elif st.session_state['page'] == "opt1":
-    view_by_countries()
+# # Page routing
+# if st.session_state["page"] == "main":
+#     main()
+# elif st.session_state['page'] == 'options':
+#     options()
+# elif st.session_state['page'] == "opt1":
+#     view_by_countries()

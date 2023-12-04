@@ -1,12 +1,12 @@
-import sys
-print(sys.argv)
+# import sys
+# print(sys.argv)
 
-# from JSON_Reader import *
+from gui import *
 
-# file = "dataset.json"
-# doc_id = 1393631983
-# json_reader = Reader()
-# data = json_reader.read_JSON(file)
+file = "datasets/sample_600k_lines.json"
+doc_id = 1393631983
+data= load_data(file)
+print(data)
 # doc_data = []
 # for i in data:
 #     if i["ts"] == doc_id:
