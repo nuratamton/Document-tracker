@@ -4,6 +4,8 @@ import pandas as pd
 import json as js
 import matplotlib.pyplot as plt
 
+from view_by_country import *
+
 # Function to load the data,
 # Takes filename as parameter
 def load_data(file, is_uploaded_file=False):
@@ -15,7 +17,6 @@ def load_data(file, is_uploaded_file=False):
             # Read from a file path
             with open(file, 'r') as f:
                 lines = f.readlines()
-
         # Process each line as JSON
         for line in lines:
             try:
@@ -36,7 +37,7 @@ def load_data(file, is_uploaded_file=False):
 def main():
     st.title(''' :rainbow[Document Tracker] :bar_chart:''')
     st.subheader("Upload your file")
-    default_file = "dataset.txt"
+    default_file = "datasets/dataset.txt"
     data_file = st.file_uploader("Upload your JSON data", type=["json", "txt"], key="unique_file_uploader")
 
     # Subheader for the displaying of data
@@ -45,7 +46,7 @@ def main():
     if data_file is not None:
         # load the file chosen by the user
         data = load_data(data_file, is_uploaded_file=True)
-        # save it
+        # save the data
         st.session_state['data'] = data 
     else:
         # if its not specified, load the default file
@@ -64,11 +65,14 @@ def main():
     # Button to analyse the data
     st.button('Analyse data', on_click=navigate_to_options)
 
+# Function to navigate to main page
+def navigate_to_main():
+    st.session_state['page'] = 'main'
+
 # Function for options page
 def options():
     # Back button to go back to the main page
     st.button('⬅ Back', on_click=navigate_to_main)
-    
     # Adds a title
     st.title(''' :rainbow[Document Tracker] :bar_chart:''')
     # Adds a subtitle
@@ -85,9 +89,7 @@ def options():
         # displaying the image maintaing the column width
         st.image(image,use_column_width=True)
         # A button to view by country/continent
-        if st.button("View by Country/Continent"):
-            st.session_state['task'] = 'View by Country/Continent'
-            st.session_state['page'] = 'task_page'
+        st.button("View by Country/Continent", on_click=navigate_to_opt1)
     
     # in the second column
     with col2:
@@ -124,9 +126,28 @@ def navigate_to_options():
     # save the session state
     st.session_state['page'] = 'options'
 
-# Function to navigate to main page
-def navigate_to_main():
-    st.session_state['page'] = 'main'
+def view_by_countries():
+    country_cont = country_cont_map()
+    if "data" in st.session_state:
+        # Access the data
+        data = st.session_state["data"]
+        # Perform operations with data
+    else:
+        st.write("Data not loaded yet")
+
+    st.button('⬅ Back', on_click=navigate_to_options)
+    st.title(''' :rainbow[Document Tracker] :bar_chart:''')
+    st.subheader("View by countries and continents")
+    document_uuid = st.text_input('Enter Document UUID:')
+    if document_uuid:
+        fig_country, fig_continent = uuid_country_hist(document_uuid, data, country_cont)
+        st.pyplot(fig_country)
+        st.pyplot(fig_continent)
+
+def navigate_to_opt1():
+    st.session_state['task'] = 'View by Country/Continent'
+    st.session_state['page'] = 'opt1'
+
 
 # SAMPLE FOR WHERE EACH PAGE LEADS, REMOVE IT
 def task_page():
@@ -134,17 +155,17 @@ def task_page():
     st.button('Main menu', on_click=navigate_to_options)
 
 # Initialize state session
-if 'page' not in st.session_state:
-    st.session_state['page'] = 'main'
-if 'data' not in st.session_state:
-    st.session_state['data'] = None
-if 'task' not in st.session_state:
+if "page" not in st.session_state:
+    st.session_state["page"] = "main"
+if "data" not in st.session_state:
+    st.session_state["data"] = None
+if "task" not in st.session_state:
     st.session_state['task'] = None
 
 # Page routing
-if st.session_state['page'] == 'main':
+if st.session_state["page"] == "main":
     main()
 elif st.session_state['page'] == 'options':
     options()
-elif st.session_state['page'] == 'task_page':
-    task_page()
+elif st.session_state['page'] == "opt1":
+    view_by_countries()
