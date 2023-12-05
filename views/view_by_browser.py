@@ -49,7 +49,7 @@ def broswer_count(data,doc_id):
     plt.gca().set_xticks(np.arange(len(browser_name)))
 
     # Setting the x-axis labels 
-    plt.gca().set_xticklabels(browser_name, rotation=45, ha='right')
+    plt.gca().set_xticklabels(browser_name, ha='center')
 
     # Setting the y-axis values 
     plt.gca().yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
