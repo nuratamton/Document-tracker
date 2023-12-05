@@ -4,34 +4,16 @@ import pandas as pd
 import json as js
 import matplotlib.pyplot as plt
 
-from view_by_country import *
+from views.view_by_country import CountryContinent
+from data_op.data_loader import Reader
 
-# Function to load the data,
-# Takes filename as parameter
-def load_data(file, is_uploaded_file=False):
-    JSON = []
-    try:
-        if is_uploaded_file:
-            lines = file.getvalue().decode("utf-8").splitlines()
-        else:
-            # Read from a file path
-            with open(file, 'r') as f:
-                lines = f.readlines()
-        # Process each line as JSON
-        for line in lines:
-            try:
-                json_line = js.loads(line.strip())
-                JSON.append(json_line)
-            except js.JSONDecodeError as e:
-                print(json_line)
-                print(f"Error parsing JSON on line: {e}")
-            except Exception as e:
-                print(f"Unexpected error: {e}")
-
-        return pd.DataFrame(JSON)
-    except Exception as e:
-        print(f"Error reading file: {e}")
-        return pd.DataFrame()
+# Initialize state session
+if "page" not in st.session_state:
+    st.session_state["page"] = "main"
+if "data" not in st.session_state:
+    st.session_state["data"] = None
+if "task" not in st.session_state:
+    st.session_state['task'] = None
 
 # Function for the main page
 def main():
@@ -44,30 +26,37 @@ def main():
     st.subheader("Visualized Data")
     # if a file is already loaded
     if data_file is not None:
-        # load the file chosen by the user
-        data = load_data(data_file, is_uploaded_file=True)
-        # save the data
-        st.session_state['data'] = data 
+        reader = Reader(data_file)
+        # # load the file chosen by the user
+        # data = reader.concatenate_chunks()
     else:
+        reader = Reader(default_file)
         # if its not specified, load the default file
-        data = load_data(default_file, is_uploaded_file=False)
-        # save it
-        st.session_state['data'] = data 
+        # data = reader.load_data()
+
+    data = reader.concatenate_chunks()
+    st.session_state['data'] = data
+    st.success("Data loaded successfully.")
+
+    if 'data' in st.session_state and not st.session_state['data'].empty:
+        st.write("Showing first 100 rows of the data:")
+        st.write(st.session_state['data'].head(100))  # Display first 100 rows as an example
+
 
     # if data contains something
-    if not data.empty:
-        # write the data
-        st.write(data)
-    else:
-        # if data was empty, show an error message
-        st.error('Failed to load data. Please check the file format and contents.')
+    # if not data.empty:
+    #     # write the data
+    #     st.write(data)
+    # else:
+    #     # if data was empty, show an error message
+    #     st.error('Failed to load data. Please check the file format and contents.')
 
     # Button to analyse the data
     st.button('Analyse data', on_click=navigate_to_options)
 
 # Function to navigate to main page
 def navigate_to_main():
-    st.session_state['page'] = 'main'
+    st.session_state["page"] = "main"
 
 # Function for options page
 def options():
@@ -127,7 +116,7 @@ def navigate_to_options():
     st.session_state['page'] = 'options'
 
 def view_by_countries():
-    country_cont = country_cont_map()
+    country_cont = CountryContinent()
     if "data" in st.session_state:
         # Access the data
         data = st.session_state["data"]
@@ -140,7 +129,7 @@ def view_by_countries():
     st.subheader("View by countries and continents")
     document_uuid = st.text_input('Enter Document UUID:')
     if document_uuid:
-        fig_country, fig_continent = uuid_country_hist(document_uuid, data, country_cont)
+        fig_country, fig_continent = country_cont.uuid_country_cont_hist(document_uuid, data)
         st.pyplot(fig_country)
         st.pyplot(fig_continent)
 
@@ -154,18 +143,10 @@ def task_page():
     st.title(f"Task: {st.session_state['task']}")
     st.button('Main menu', on_click=navigate_to_options)
 
-# Initialize state session
-# if "page" not in st.session_state:
-#     st.session_state["page"] = "main"
-# if "data" not in st.session_state:
-#     st.session_state["data"] = None
-# if "task" not in st.session_state:
-#     st.session_state['task'] = None
-
-# # Page routing
-# if st.session_state["page"] == "main":
-#     main()
-# elif st.session_state['page'] == 'options':
-#     options()
-# elif st.session_state['page'] == "opt1":
-#     view_by_countries()
+# Page routing
+if st.session_state["page"] == "main":
+    main()
+elif st.session_state["page"] == 'options':
+    options()
+elif st.session_state["page"] == "opt1":
+    view_by_countries()
