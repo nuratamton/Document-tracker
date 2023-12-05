@@ -1,6 +1,7 @@
 import numpy as np
 from graphviz import Digraph,Source
 import pandas as pd
+from data_op.data_loader import Reader
 # class to handle the also liked feature
 class AlsoLike:
     # class init; take dataframe and use that as an attribute
@@ -56,20 +57,30 @@ class AlsoLike:
     # function to generate the also-like graph
     def generate_graph(self, doc_id, sorting_function = None ,visitor_uuid = None ):
         graph = Digraph(comment="graph")
-        graph.node(doc_id[-4:],style = 'filled',fillcolor="purple")
+        graph.node(doc_id[-4:],style = 'filled',fillcolor="purple",shape='box')
 
+        input_doc_visitors = self.get_visitor_uuid(doc_id)
         if visitor_uuid:
             graph.node(visitor_uuid[-4:],style = 'filled',fillcolor='purple')
             graph.edge(visitor_uuid[-4:], doc_id[-4:])
+            input_doc_visitors = {visitor_uuid}
         
+        for v in input_doc_visitors:
+            if v != visitor_uuid:
+                graph.node(v[-4:])
+            graph.edge(v[-4:], doc_id[-4:])
+            
         for doc in self.get_also_like(doc_id,sorting_function,visitor_uuid):
             graph.node(doc[-4:], shape="box")
             visitor = self.get_visitor_uuid(doc)
             for v in visitor:
-                if not visitor_uuid or (visitor_uuid and v == visitor_uuid):
+                if reader != visitor_uuid:
+                    graph.node(v[-4:])
                     graph.edge(v[-4:], doc[-4:])
         output_path = 'graph'
+        output_path2 = 'graph_image'
         graph.render(output_path, format='pdf', cleanup=True)
+        graph.render(output_path2, format='png', cleanup=True)
         return output_path
 
 
@@ -92,17 +103,24 @@ data = [
     {"visitor_uuid": "user9", "subject_doc_id": "doc6"},
     {"visitor_uuid": "user10", "subject_doc_id": "doc6"}
 ]
-
+# readerr = Reader('dataset.json')
+# df = readerr.concatenate_chunks()
 df = pd.DataFrame(data)
 
+# Instantiate your also_like class
 reader = AlsoLike(df)
 
+# Test get_visitor_uuid method
 print("Visitors for doc1:", reader.get_visitor_uuid("doc1"))
 
+# Test get_document_uuid method
 print("Documents read by user3:", reader.get_document_uuid("user3"))
 
+# Test get_also_like method
 also_likes_for_doc1 = reader.get_also_like("doc1")
 print("Also like documents for doc1:", also_likes_for_doc1)
 
+# Test generate_graph method (if implemented)
+# This will create a graph visualization as a PDF
 graph_path = reader.generate_graph("doc1")
 print("Graph generated at:", graph_path)
