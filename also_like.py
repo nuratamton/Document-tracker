@@ -1,15 +1,14 @@
-
 import numpy as np
 from graphviz import Digraph,Source
+
 # class to handle the also liked feature
-class also_like:
+class AlsoLike:
     # class init; take dataframe and use that as an attribute
     def __init__(self, data_frame):
         self.data_frame = data_frame
 
     # this function takes a doc_id and returns a set of visitor ids
     def get_visitor_uuid(self, doc_id):
-
         visitor_collection = set()
         # from the data frame, get a list of the entries that have the field 'subject_doc_id' as doc_id
         filtered_data = self.data_frame[self.data_frame['subject_doc_id'] == doc_id]
@@ -32,7 +31,6 @@ class also_like:
     # private helper method to sort a list of documents on default by the order of number of views
     # the best 10 are returned
     def _sort_documents(self,documents,sorting_function):
-
         # if a sorting function is provided, it uses that 
         if sorting_function is not None:
             return sorting_function(documents)[:10]
@@ -43,7 +41,6 @@ class also_like:
 
     # function to get the also like list
     def get_also_like(self, doc_id, sorting_function = None ,visitor_uuid = None):
-
         # using the 'get_visitor_uuid' function get a list of the reader of the given doc id
         visitors = self.get_visitor_uuid(doc_id)
         # if a visitor_uuid was provided and its in the visitors list, we check all the documents read only by that visitor
@@ -52,12 +49,12 @@ class also_like:
         # get a numpy array of all the documents that every document that the readers of the provided document have read
         document_collection = np.array([doc for v in visitors for doc in self.get_document_uuid(v) if doc != doc_id])
         # return the best 10 sorted documents
-        return self._sort_documents(document_collection,sorting_function)
+        print("fsef",self._sort_documents(document_collection, sorting_function))
+        return self._sort_documents(document_collection, sorting_function)
     
     # function to generate the also-like graph
     def generate_graph(self, doc_id, sorting_function = None ,visitor_uuid = None ):
         graph = Digraph(comment="graph")
-
         graph.node(doc_id[-4:],style = 'filled',fillcolor="purple")
 
         if visitor_uuid:
