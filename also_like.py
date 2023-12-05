@@ -1,6 +1,6 @@
 import numpy as np
 from graphviz import Digraph,Source
-
+import pandas as pd
 # class to handle the also liked feature
 class AlsoLike:
     # class init; take dataframe and use that as an attribute
@@ -37,7 +37,8 @@ class AlsoLike:
         # otherwise, it sorts them based on the number of times they were viewed (default behavior)
         else:
             unique_docs, count = np.unique(documents, return_counts=True)
-            return np.argsort(-count)[:10]
+            index = np.argsort(-count)
+            return unique_docs[index][:10]
 
     # function to get the also like list
     def get_also_like(self, doc_id, sorting_function = None ,visitor_uuid = None):
@@ -70,3 +71,38 @@ class AlsoLike:
         output_path = 'graph.pdf'
         graph.render(output_path, format='pdf', cleanup=True)
         return output_path
+
+
+data = [
+    {"visitor_uuid": "04daa9ed9dde73d3", "subject_doc_id": "doc1"},
+    {"visitor_uuid": "04daa9ed9dde73d3", "subject_doc_id": "doc2"},
+    {"visitor_uuid": "ade7e1f63bc83c66", "subject_doc_id": "doc1"},
+    {"visitor_uuid": "ade7e1f63bc83c66", "subject_doc_id": "doc3"},
+    {"visitor_uuid": "user3", "subject_doc_id": "doc2"},
+    {"visitor_uuid": "user3", "subject_doc_id": "doc3"},
+    {"visitor_uuid": "user4", "subject_doc_id": "doc3"},
+    {"visitor_uuid": "user4", "subject_doc_id": "doc4"},
+    {"visitor_uuid": "user5", "subject_doc_id": "doc1"},
+    {"visitor_uuid": "user5", "subject_doc_id": "doc4"},
+    {"visitor_uuid": "user6", "subject_doc_id": "doc2"},
+    {"visitor_uuid": "user7", "subject_doc_id": "doc2"},
+    {"visitor_uuid": "user7", "subject_doc_id": "doc5"},
+    {"visitor_uuid": "user8", "subject_doc_id": "doc5"},
+    {"visitor_uuid": "user9", "subject_doc_id": "doc1"},
+    {"visitor_uuid": "user9", "subject_doc_id": "doc6"},
+    {"visitor_uuid": "user10", "subject_doc_id": "doc6"}
+]
+
+df = pd.DataFrame(data)
+
+reader = AlsoLike(df)
+
+print("Visitors for doc1:", reader.get_visitor_uuid("doc1"))
+
+print("Documents read by user3:", reader.get_document_uuid("user3"))
+
+also_likes_for_doc1 = reader.get_also_like("doc1")
+print("Also like documents for doc1:", also_likes_for_doc1)
+
+graph_path = reader.generate_graph("doc1")
+print("Graph generated at:", graph_path)
