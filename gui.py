@@ -4,6 +4,7 @@ import pandas as pd
 import json as js
 import matplotlib.pyplot as plt
 import graphviz
+import time
 
 from views.view_by_country import CountryContinent
 from also_like import AlsoLike
@@ -16,6 +17,12 @@ if "data" not in st.session_state:
     st.session_state["data"] = None
 if "task" not in st.session_state:
     st.session_state['task'] = None
+
+def show_progress(duration=1):
+    progress_bar = st.progress(0)
+    for percent_complete in range(100):
+        time.sleep(duration / 100)
+        progress_bar.progress(percent_complete + 1)
 
 # Function for the main page
 def main():
@@ -52,6 +59,7 @@ def main():
 
 # Function to navigate to main page
 def navigate_to_main():
+    show_progress()
     st.session_state["page"] = "main"
 
 # Function for options page
@@ -88,6 +96,8 @@ def options():
             st.session_state['task'] = 'View by Browser'
             print("Done")
             st.session_state['page'] = 'task_page'
+
+    st.write("")
     st.write("")
 
     # in the third column
@@ -95,7 +105,7 @@ def options():
         # to load image
         image = Image.open("images/profile.png")
         st.image(image,use_column_width=True)
-        st.button("Reader profiles")
+        st.button("Reader profiles", on_click=navigate_to_opt3)
 
     # in the fourth column
     with col4:
@@ -108,6 +118,7 @@ def options():
 
 # Funcition to navigate to options page
 def navigate_to_options():
+    show_progress()
     # save the session state
     st.session_state['page'] = 'options'
 
@@ -120,18 +131,68 @@ def view_by_countries():
     else:
         st.write("Data not loaded yet")
 
+    # back button
     st.button('⬅ Back', on_click=navigate_to_options)
+    # added the title for the page
     st.title(''' :rainbow[Document Tracker] :bar_chart:''')
+    # spacing for better visibility
+    st.write("")
+    # added the subheader for the page
     st.subheader("View by countries and continents")
+    st.write("")
+    # gets user input (the doc id)
     document_uuid = st.text_input('Enter Document UUID:')
+    st.write("")
+    # if document id is given
     if document_uuid:
+        # get the graphs from the defined function
         fig_country, fig_continent = country_cont.uuid_country_cont_hist(document_uuid, data)
+        # added subheader for the countries graph
+        st.subheader("View by Countries")
+        # display the graph
         st.pyplot(fig_country)
+        st.write("")
+        st.write("")
+        # added subheader for the continents graph
+        st.subheader("View by Continents")
+        # display the graph
         st.pyplot(fig_continent)
 
 def navigate_to_opt1():
+    show_progress()
     st.session_state['task'] = 'View by Country/Continent'
     st.session_state['page'] = 'opt1'
+
+def display_top_readers():
+    if "data" in st.session_state:
+        # Access the data
+        data = st.session_state["data"]
+    else:
+        st.write("Data not loaded yet")
+
+    st.button('⬅ Back', on_click=navigate_to_options)
+    st.title(''' :rainbow[Document Tracker] :bar_chart:''')
+    st.subheader("View top readers")
+
+    # reader class instance
+    reader = Reader(data)
+    # getting the top readers
+    top_readers = reader.top_readers(data)
+    # converting the series to dataframe for display
+
+    if not top_readers.empty:
+        # add a column with the rank of the readers
+        top_readers['Rank'] = range(1, len(top_readers) + 1)
+        # reorder columns to display rank first
+        top_readers_df = top_readers[['Rank', 'visitor_uuid']]
+        st.table(top_readers_df)
+    else:
+        st.write("No top readers data available.")
+
+def navigate_to_opt3():
+    show_progress()
+    st.session_state['task'] = "Reader profiles"
+    st.session_state['page'] = "opt3"
 
 def display_also_like():
     if "data" in st.session_state:
@@ -145,19 +206,19 @@ def display_also_like():
 
     st.button('⬅ Back', on_click=navigate_to_options)
     st.title(''' :rainbow[Document Tracker] :bar_chart:''')
-    st.subheader("View 'Also Likes'")
+    st.subheader("View 'Also Liked'")
     document_uuid = st.text_input('Enter Document UUID:')
 
     also_likes_list = also_like.get_also_like(document_uuid)
-    print(also_likes_list)
-
-    st.subheader("Also Likes List")
-    st.write(also_likes_list)
+    if also_likes_list.size > 0:
+        # Convert list to DataFrame for display
+        df = pd.DataFrame({'Recommended Documents': also_likes_list}, index=range(1, len(also_likes_list) + 1))
+        st.subheader("Other readers of this document also like:")
+        st.table(df)
+    else:
+        st.write("No recommendations available for this document.")
 
     also_likes_graph = also_like.generate_graph(document_uuid)
-
-    st.subheader("Also Likes Graph")
-
     try:
         with open(also_likes_graph, 'rb') as f:
             dot_graph = f.read()
@@ -167,6 +228,7 @@ def display_also_like():
         st.error('Graph file not found. Please ensure graphviz is installed and the path is correct.')
 
 def navigate_to_opt4():
+    show_progress()
     st.session_state['task'] = "Also Likes"
     st.session_state['page'] = "opt4"
 
@@ -182,5 +244,7 @@ elif st.session_state["page"] == 'options':
     options()
 elif st.session_state["page"] == "opt1":
     view_by_countries()
+elif st.session_state["page"]=="opt3":
+    display_top_readers()
 elif st.session_state["page"] == "opt4":
     display_also_like()

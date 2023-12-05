@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 class CountryContinent:
@@ -9,7 +10,7 @@ class CountryContinent:
     # function to retrieve a dictionary from the dataframe
     def country_cont_map(self):
         # load the full dataset into dataset
-        dataset = pd.read_csv("datasets/country_continent.csv", encoding="ISO-8859-1")
+        dataset = pd.read_csv("datasets/country_continent.csv", encoding='ISO-8859-1')
         # selects only country and continent fields and stores it
         mapping = dataset[["code_2", "continent"]]
         # country column is set as index
@@ -20,15 +21,21 @@ class CountryContinent:
         return country_cont
     
     # function to plot a histogram
-    def plot_hist(self, data, label, color):
+    def plot_hist(self, data, label):
         if (len(data) < 2):
             num_bins = 1
         else:
             num_bins = len(data.unique())
+        colors = ["#483D8B", "#6A5ACD", "#9370DB", "#7B68EE"]
         # creates figure and subplot
         fig, ax  = plt.subplots(figsize=(10, 5))
         # creates a histogram with the same number of bins as unique values in data
-        ax.hist(data, bins=num_bins, edgecolor="black", color=color)
+        n, bins, patches = ax.hist(data, bins=num_bins)
+
+        # Assign a color to each bin
+        for patch, color in zip(patches, colors):
+            patch.set_facecolor(color)
+
         # the title for countries against number of viewers graph is set
         ax.set_title(f"View by {label}")
          # the label for x axis is set
@@ -36,7 +43,7 @@ class CountryContinent:
          # the label for y axis is set
         ax.set_ylabel("Views")
         # set positions of the ticks
-        ax.set_xticks(range(len(data.unique())))
+        ax.set_xticks((bins[:-1] + bins[1:]) / 2)
         # creates a label for each unique element of data
         ax.set_xticklabels(data.unique(), rotation = 90)
         return fig
@@ -48,9 +55,10 @@ class CountryContinent:
         # selects the country column after filtering data
         countries = selected_uuid['visitor_country']
         # to plot the histogram for viewers against country
-        fig_country = self.plot_hist(countries, "Countries", "green")
+        fig_country = self.plot_hist(countries, "Countries")
         # continent names using the mapping dictionary
         continents = countries.map(self.country_cont_dict)
         # to plot the histogram for viewers against continent
-        fig_cont = self.plot_hist(continents, "Continents", "brown")
+        fig_cont = self.plot_hist(continents, "Continents")
         return fig_country, fig_cont
+    
