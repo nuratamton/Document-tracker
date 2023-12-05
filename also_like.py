@@ -68,7 +68,7 @@ class AlsoLike:
             for v in visitor:
                 if not visitor_uuid or (visitor_uuid and v == visitor_uuid):
                     graph.edge(v[-4:], doc[-4:])
-        output_path = 'graph.pdf'
+        output_path = 'graph'
         graph.render(output_path, format='pdf', cleanup=True)
         return output_path
 

@@ -42,16 +42,10 @@ def main():
 
     if 'data' in st.session_state and not st.session_state['data'].empty:
         st.write("Showing first 100 rows of the data:")
-        st.write(st.session_state['data'].head(100))  # Display first 100 rows as an example
-
-
-    # if data contains something
-    # if not data.empty:
-    #     # write the data
-    #     st.write(data)
-    # else:
-    #     # if data was empty, show an error message
-    #     st.error('Failed to load data. Please check the file format and contents.')
+        st.write(st.session_state['data'].head(100)) 
+    else:
+        # if data was empty, show an error message
+        st.error('Failed to load data. Please check the file format and contents.')
 
     # Button to analyse the data
     st.button('Analyse data', on_click=navigate_to_options)
@@ -164,9 +158,13 @@ def display_also_like():
 
     st.subheader("Also Likes Graph")
 
-    with open(also_likes_graph) as f:
-        dot_graph = f.read()
-    st.graphviz_chart(dot_graph)
+    try:
+        with open(also_likes_graph, 'rb') as f:
+            dot_graph = f.read()
+        st.download_button(label="Download graph", data=dot_graph, file_name="graph.pdf", mime="application/pdf")
+        # st.graphviz_chart(dot_graph)
+    except FileNotFoundError:
+        st.error('Graph file not found. Please ensure graphviz is installed and the path is correct.')
 
 def navigate_to_opt4():
     st.session_state['task'] = "Also Likes"
