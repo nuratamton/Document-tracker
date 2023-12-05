@@ -4,6 +4,7 @@ import pandas as pd
 import json as js
 import matplotlib.pyplot as plt
 import graphviz
+import time
 
 from views.view_by_country import CountryContinent
 from also_like import AlsoLike
@@ -16,6 +17,12 @@ if "data" not in st.session_state:
     st.session_state["data"] = None
 if "task" not in st.session_state:
     st.session_state['task'] = None
+
+def show_progress(duration=1):
+    progress_bar = st.progress(0)
+    for percent_complete in range(100):
+        time.sleep(duration / 100)
+        progress_bar.progress(percent_complete + 1)
 
 # Function for the main page
 def main():
@@ -52,6 +59,7 @@ def main():
 
 # Function to navigate to main page
 def navigate_to_main():
+    show_progress()
     st.session_state["page"] = "main"
 
 # Function for options page
@@ -110,6 +118,7 @@ def options():
 
 # Funcition to navigate to options page
 def navigate_to_options():
+    show_progress()
     # save the session state
     st.session_state['page'] = 'options'
 
@@ -150,6 +159,7 @@ def view_by_countries():
         st.pyplot(fig_continent)
 
 def navigate_to_opt1():
+    show_progress()
     st.session_state['task'] = 'View by Country/Continent'
     st.session_state['page'] = 'opt1'
 
@@ -180,6 +190,7 @@ def display_top_readers():
         st.write("No top readers data available.")
 
 def navigate_to_opt3():
+    show_progress()
     st.session_state['task'] = "Reader profiles"
     st.session_state['page'] = "opt3"
 
@@ -217,6 +228,7 @@ def display_also_like():
         st.error('Graph file not found. Please ensure graphviz is installed and the path is correct.')
 
 def navigate_to_opt4():
+    show_progress()
     st.session_state['task'] = "Also Likes"
     st.session_state['page'] = "opt4"
 
