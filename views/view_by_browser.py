@@ -36,5 +36,7 @@ def broswer_count(data,doc_id):
     
     return ax
 
+doc_id = "140224101516-e5c074c3404177518bab9d7a65fb578e"
+data = load_data("datasets/dataset.txt")
 broswer_count(data,doc_id)
 plt.show()
