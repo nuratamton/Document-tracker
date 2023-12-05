@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from user_agents import parse
-from views.data_op.data_loader import load_data
+from data_op.data_loader import Reader
 
 
 def broswer_count(data,doc_id):
@@ -21,8 +21,6 @@ def broswer_count(data,doc_id):
     plot_data = final_data.groupby('visitor_useragent')['visitor_uuid'].nunique().reset_index()
     print(plot_data)
 
-    
-
     #plotting the graph
     plt.figure(figsize=(5, 3))
     ax = plt.bar(plot_data['visitor_useragent'], plot_data['visitor_uuid'], color='orange')
@@ -32,11 +30,5 @@ def broswer_count(data,doc_id):
     plt.ylabel('Number of Users')
     plt.title('Number of Users per Browser')
     plt.xticks(rotation=45)
-    
-    
     return ax
 
-doc_id = "140224101516-e5c074c3404177518bab9d7a65fb578e"
-data = load_data("datasets/dataset.txt")
-broswer_count(data,doc_id)
-plt.show()

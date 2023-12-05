@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import json
-from data_loader import Reader
+from .data_loader import Reader
 
 sample_data = [
     {"id": 1, "name": "John Doe"},
