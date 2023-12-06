@@ -6,6 +6,10 @@ from data_op.data_loader import Reader
 
 class BrowserCount:
 
+    def __init__(self, data, doc_id):
+        self.data = data
+        self.doc_id = doc_id
+
     def broswer_count(data,doc_id):
         
         #filtering date based on document id given
