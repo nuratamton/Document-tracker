@@ -6,22 +6,20 @@ from data_op.data_loader import Reader
 
 class BrowserCount:
 
-    def __init__(self, data, doc_id):
+    def __init__(self, data):
         self.data = data
-        self.doc_id = doc_id
+       
 
-    def broswer_count(data,doc_id):
+    def broswer_count(self,doc_id):
         
         #filtering date based on document id given
-        filter_document = data[data["env_doc_id"]== doc_id]
-    
-        data = filter_document 
+        filter_document = self.data[self.data["env_doc_id"]== doc_id]
     
         #retrieving browser name removing uneccessary information using parser function from user_agent
-        data["visitor_useragent"] = data["visitor_useragent"].apply(lambda x: parse(x).browser.family)
+        filter_document["visitor_useragent"] = filter_document["visitor_useragent"].apply(lambda x: parse(x).browser.family)
     
         #removing repeating users using the same browser 
-        final_data = data.drop_duplicates(subset=["visitor_useragent", "visitor_uuid"])  
+        final_data = filter_document.drop_duplicates(subset=["visitor_useragent", "visitor_uuid"])  
     
         # calculating number of users for each browser used
         plot_data = final_data.groupby("visitor_useragent")["visitor_uuid"].nunique().reset_index()
@@ -62,12 +60,11 @@ class BrowserCount:
         plt.tight_layout()     
         return ax
         
-    def broswer_count_full(data,doc_id):
+    def broswer_count_full(self,doc_id):
         #filtering data by doc id
-        filter_document = data[data["subject_doc_id"]== doc_id]
-        data = filter_document 
-    
-        final_data = data.drop_duplicates(subset=["visitor_useragent", "visitor_uuid"])   
+        filter_document = self.data[self.data["subject_doc_id"]== doc_id]
+            
+        final_data = filter_document.drop_duplicates(subset=["visitor_useragent", "visitor_uuid"])   
         
         plot_data = final_data.groupby("visitor_useragent")["visitor_uuid"].nunique().reset_index()
         print(plot_data)
