@@ -208,19 +208,21 @@ def display_also_like():
     st.title(''' :rainbow[Document Tracker] :bar_chart:''')
     st.subheader("View 'Also Liked'")
     document_uuid = st.text_input('Enter Document UUID:')
+    visitor_uuid = st.text_input('Enter Visitor UUID:')
+    sorting = st.selectbox()
+    if document_uuid:
+        also_likes_list = also_like.get_also_like(doc_id=document_uuid, visitor_uuid=visitor_uuid)
+        if also_likes_list.size > 0:
+            # Convert list to DataFrame for display
+            df = pd.DataFrame({'Recommended Documents': also_likes_list}, index=range(1, len(also_likes_list) + 1))
+            st.subheader("Other readers of this document also like:")
+            st.table(df)
+        else:
+            st.write("No recommendations available for this document.")
 
-    also_likes_list = also_like.get_also_like(document_uuid)
-    if also_likes_list.size > 0:
-        # Convert list to DataFrame for display
-        df = pd.DataFrame({'Recommended Documents': also_likes_list}, index=range(1, len(also_likes_list) + 1))
-        st.subheader("Other readers of this document also like:")
-        st.table(df)
-    else:
-        st.write("No recommendations available for this document.")
-
-    also_likes_graph = also_like.generate_graph(document_uuid)
-        # to display the image
-    st.image(also_likes_graph+".png")
+        also_likes_graph = also_like.generate_graph(doc_id=document_uuid, visitor_uuid=visitor_uuid)
+            # to display the image
+        st.image(also_likes_graph+".png")
 
 def navigate_to_opt4():
     show_progress()
