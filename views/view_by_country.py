@@ -51,7 +51,7 @@ class CountryContinent:
     # function to return the plotted histogram
     def uuid_country_cont_hist(self, uuid, data):
         # filters the data and gets only the selected UUID
-        selected_uuid = data[data['subject_doc_id'] == uuid]
+        selected_uuid = data[data['env_doc_id'] == uuid]
         # selects the country column after filtering data
         countries = selected_uuid['visitor_country']
         # to plot the histogram for viewers against country

@@ -187,6 +187,7 @@ def view_by_browser():
         fig_browser_full, index_table = browser_count.browser_count_full(document_uuid)
         # added subheader for the countries graph
         st.subheader("View by  Identifiers")
+        st.write(index_table)
         # display the graph
         st.pyplot(fig_browser_full)
         st.write("")
@@ -208,10 +209,12 @@ def display_top_readers():
         data = st.session_state["data"]
     else:
         st.write("Data not loaded yet")
-
+    
     st.button('⬅ Back', on_click=navigate_to_options)
     st.title(''' :rainbow[Document Tracker] :bar_chart:''')
+    st.write("")
     st.subheader("View top readers")
+    st.write("")
 
     # reader class instance
     reader = Reader(data)
@@ -227,6 +230,12 @@ def display_top_readers():
         st.table(top_readers_df)
     else:
         st.write("No top readers data available.")
+    st.write("")
+    st.subheader("View devices used")
+    st.write("")
+    browser_count = BrowserCount(data)
+    fig_device = browser_count.device_used()
+    st.pyplot(fig_device)
 
 def navigate_to_opt3():
     show_progress()
@@ -245,9 +254,13 @@ def display_also_like():
     sort = SortingDocFunctions(data)
     st.button('⬅ Back', on_click=navigate_to_options)
     st.title(''' :rainbow[Document Tracker] :bar_chart:''')
+    st.write("")
     st.subheader("View 'Also Liked'")
+    st.write("")
     document_uuid = st.text_input('Enter Document UUID:')
+    st.write("")
     visitor_uuid = st.text_input('Enter Visitor UUID:')
+    st.write("")
     sorting = st.selectbox("Select Sorting Method:", ("Default", "Country Diversity Score"))
 
     if(sorting == "Country Diversity Score"):
@@ -261,23 +274,28 @@ def display_also_like():
             # Convert list to DataFrame for display
             df = pd.DataFrame({'Recommended Documents': also_likes_list}, index=range(1, len(also_likes_list) + 1))
             st.subheader("Other readers of this document also like:")
+            st.write("")
             st.table(df)
+            st.write("")
         else:
             st.write("No recommendations available for this document.")
 
+        st.subheader("Graph")
+        st.write("")
         also_likes_graph = also_like.generate_graph(doc_id=document_uuid, visitor_uuid=visitor_uuid, sorting_function=sorting)
             # to display the image
         st.image(also_likes_graph+".png")
 
+# function to navigate to fourth option
 def navigate_to_opt4():
     show_progress()
     st.session_state['task'] = "Also Likes"
     st.session_state['page'] = "opt4"
 
-# SAMPLE FOR WHERE EACH PAGE LEADS, REMOVE IT
-def task_page():
-    st.title(f"Task: {st.session_state['task']}")
-    st.button('Main menu', on_click=navigate_to_options)
+# # SAMPLE FOR WHERE EACH PAGE LEADS, REMOVE IT
+# def task_page():
+#     st.title(f"Task: {st.session_state['task']}")
+#     st.button('Main menu', on_click=navigate_to_options)
 
 # Page routing
 if st.session_state["page"] == "main":

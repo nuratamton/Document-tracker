@@ -12,8 +12,8 @@ class AlsoLike:
     # this function takes a doc_id and returns a set of visitor ids
     def get_visitor_uuid(self, doc_id):
         visitor_collection = set()
-        # from the data frame, get a list of the entries that have the field 'subject_doc_id' as doc_id
-        filtered_data = self.data_frame[self.data_frame['subject_doc_id'] == doc_id]
+        # from the data frame, get a list of the entries that have the field 'env_doc_id' as doc_id
+        filtered_data = self.data_frame[self.data_frame['env_doc_id'] == doc_id]
         # create a set of visitor_uuids and return it
         for _,item in filtered_data.iterrows():
             visitor_collection.add(item['visitor_uuid'])
@@ -27,7 +27,7 @@ class AlsoLike:
         filtered_data = self.data_frame[self.data_frame['visitor_uuid'] == visitor_uuid]
         # create a set of document_uuids and return it
         for _,item in filtered_data.iterrows():
-            document_collection.add(item['subject_doc_id'])
+            document_collection.add(item['env_doc_id'])
         return document_collection
     
     # private helper method to sort a list of documents on default by the order of number of views
@@ -57,17 +57,18 @@ class AlsoLike:
     # function to generate the also-like graph
     def generate_graph(self, doc_id, sorting_function = None ,visitor_uuid = None ):
         graph = Digraph(comment="graph")
-        graph.node(doc_id[-4:],style = 'filled',fillcolor="purple",shape='box')
+        if not self.data_frame[self.data_frame['env_doc_id'] == doc_id].empty:
+            graph.node(doc_id[-4:],style = 'filled',fillcolor="darkslategrey",shape='box')
 
         input_doc_visitors = self.get_visitor_uuid(doc_id)
-        if visitor_uuid:
-            graph.node(visitor_uuid[-4:],style = 'filled',fillcolor='purple')
+        if visitor_uuid and visitor_uuid in input_doc_visitors:
+            graph.node(visitor_uuid[-4:],style = 'filled',fillcolor='darkslategrey')
             graph.edge(visitor_uuid[-4:], doc_id[-4:])
             input_doc_visitors = {visitor_uuid}
         
         for v in input_doc_visitors:
             if v != visitor_uuid:
-                graph.node(v[-4:])
+                graph.node(v[-4:], style ='filled', fillcolor="magenta")
             graph.edge(v[-4:], doc_id[-4:])
             
         for doc in self.get_also_like(doc_id,sorting_function,visitor_uuid):
