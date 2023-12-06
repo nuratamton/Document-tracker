@@ -219,13 +219,8 @@ def display_also_like():
         st.write("No recommendations available for this document.")
 
     also_likes_graph = also_like.generate_graph(document_uuid)
-    try:
-        with open(also_likes_graph, 'rb') as f:
-            dot_graph = f.read()
-        st.download_button(label="Download graph", data=dot_graph, file_name="graph.pdf", mime="application/pdf")
-        # st.graphviz_chart(dot_graph)
-    except FileNotFoundError:
-        st.error('Graph file not found. Please ensure graphviz is installed and the path is correct.')
+        # to display the image
+    st.image(also_likes_graph+".png")
 
 def navigate_to_opt4():
     show_progress()

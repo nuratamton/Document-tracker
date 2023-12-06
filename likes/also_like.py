@@ -51,7 +51,6 @@ class AlsoLike:
         # get a numpy array of all the documents that every document that the readers of the provided document have read
         document_collection = np.array([doc for v in visitors for doc in self.get_document_uuid(v) if doc != doc_id])
         # return the best 10 sorted documents
-        print("fsef",self._sort_documents(document_collection, sorting_function))
         return self._sort_documents(document_collection, sorting_function)
     
     # function to generate the also-like graph
@@ -81,7 +80,7 @@ class AlsoLike:
         output_path2 = 'graph_image'
         graph.render(output_path, format='pdf', cleanup=True)
         graph.render(output_path2, format='png', cleanup=True)
-        return output_path
+        return output_path2
 
 
 data = [
