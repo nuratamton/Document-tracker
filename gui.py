@@ -7,7 +7,7 @@ import graphviz
 import time
 
 from views.view_by_country import CountryContinent
-from also_like import AlsoLike
+from likes.also_like import AlsoLike
 from data_op.data_loader import Reader
 
 # Initialize state session
