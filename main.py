@@ -1,11 +1,13 @@
 import argparse
 import sys
-from pandasgui import show
-from gui import *
+from tabulate import tabulate
+# from pandasgui import show
+# from gui import *
 from likes.also_like import AlsoLike
 from views.view_by_country import CountryContinent
 from views.view_by_browser import BrowserCount
 from data_op.data_loader import Reader
+import matplotlib.pyplot as plt
 
 def main():
     parser = argparse.ArgumentParser(description="Command line argument parser for cw2")
@@ -15,19 +17,31 @@ def main():
     parser.add_argument("-t", "--task_id", required=True, help="The task ID")
     parser.add_argument("-f", "--file_name", required=True, help="The file name")
     args = parser.parse_args()
+    reader = Reader(args.file_name)
+    # data = reader.load_data()
+    pd = reader.concatenate_chunks()
+    doc_id = args.doc_uuid
 
-    if(args.task_id == "2a"):
+    if(args.task_id == "2"):
         country_continent = CountryContinent()
-        country_continent.uuid_country_cont_hist()
-        show()
-    elif(args.task_id == "2b"):
-        pass                        
+        country, cont = country_continent.uuid_country_cont_hist(doc_id,pd)
+        plt.figure(country.number)
+        plt.show()                     
     elif(args.task_id == "3a"):
-        pass
+        browser_cnt = BrowserCount(pd)
+        fig, data_frame_browser = browser_cnt.browser_count_full(doc_id)
+        plt.figure(fig)
+        plt.show()
     elif(args.task_id == "3b"):
-        pass
+        browser_cnt = BrowserCount(pd)
+        fig = browser_cnt.browser_count(doc_id)
+        plt.figure(fig)
+        plt.show()
     elif(args.task_id == "4"):
-        pass
+        reader = Reader(args.file_name)
+        top_reader = reader.top_readers(pd)
+        print(tabulate(top_reader, headers = 'keys', tablefmt = 'psql'))
+
     elif(args.task_id == "5d"):
         pass
     elif(args.task_id == "6"):
@@ -48,39 +62,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# from data_op.data_loader import Reader
-# file = "datasets/sample_3m_lines.json"
-# reader = Reader(file)
-# doc_id = 1393631983
-# data= reader.concatenate_chunks()
-
-# print(data)
-# doc_data = []
-# for i in data:
-#     if i["ts"] == doc_id:
-#         doc_data.append(i)
