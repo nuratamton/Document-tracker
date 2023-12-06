@@ -7,6 +7,7 @@ import graphviz
 import time
 
 from views.view_by_country import CountryContinent
+from views.view_by_browser import BrowserCount
 from likes.also_like import AlsoLike
 from data_op.data_loader import Reader
 
@@ -91,11 +92,7 @@ def options():
         # display the image while maintaining the column width
         st.image(image,use_column_width=True)
         # if button to view by browser is clicked
-        if st.button("View by Browser"):
-            # update session state
-            st.session_state['task'] = 'View by Browser'
-            print("Done")
-            st.session_state['page'] = 'task_page'
+        st.button("View by Browser", on_click=navigate_to_opt2)
 
     st.write("")
     st.write("")
@@ -162,6 +159,47 @@ def navigate_to_opt1():
     show_progress()
     st.session_state['task'] = 'View by Country/Continent'
     st.session_state['page'] = 'opt1'
+
+def view_by_browser():
+    if "data" in st.session_state:
+        # Access the data
+        data = st.session_state["data"]
+        # Perform operations with data
+    else:
+        st.write("Data not loaded yet")
+    browser_count = BrowserCount(data)
+    # back button
+    st.button('⬅ Back', on_click=navigate_to_options)
+    # added the title for the page
+    st.title(''' :rainbow[Document Tracker] :bar_chart:''')
+    # spacing for better visibility
+    st.write("")
+    # added the subheader for the page
+    st.subheader("View by Browser")
+    st.write("")
+    # gets user input (the doc id)
+    document_uuid = st.text_input('Enter Document UUID:')
+    st.write("")
+    # if document id is given
+    if document_uuid:
+        # get the graphs from the defined function
+        fig_browser_full, index_table = browser_count.browser_count_full(document_uuid)
+        # added subheader for the countries graph
+        st.subheader("View by  Identifiers")
+        # display the graph
+        st.pyplot(fig_browser_full)
+        st.write("")
+        st.write("")
+        fig_browser_main = browser_count.browser_count(document_uuid)
+        # added subheader for the continents graph
+        st.subheader("View by Main Browser")
+        # display the graph
+        st.pyplot(fig_browser_main)
+
+def navigate_to_opt2():
+    show_progress()
+    st.session_state['task'] = 'View by Browser'
+    st.session_state['page'] = 'opt2'
 
 def display_top_readers():
     if "data" in st.session_state:
@@ -241,6 +279,8 @@ elif st.session_state["page"] == 'options':
     options()
 elif st.session_state["page"] == "opt1":
     view_by_countries()
+elif st.session_state["page"] == "opt2":
+    view_by_browser()
 elif st.session_state["page"]=="opt3":
     display_top_readers()
 elif st.session_state["page"] == "opt4":

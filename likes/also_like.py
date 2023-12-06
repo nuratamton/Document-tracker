@@ -2,6 +2,7 @@ import numpy as np
 from graphviz import Digraph,Source
 import pandas as pd
 from data_op.data_loader import Reader
+
 # class to handle the also liked feature
 class AlsoLike:
     # class init; take dataframe and use that as an attribute
@@ -81,45 +82,3 @@ class AlsoLike:
         graph.render(output_path, format='pdf', cleanup=True)
         graph.render(output_path2, format='png', cleanup=True)
         return output_path2
-
-
-data = [
-    {"visitor_uuid": "04daa9ed9dde73d3", "subject_doc_id": "doc1"},
-    {"visitor_uuid": "04daa9ed9dde73d3", "subject_doc_id": "doc2"},
-    {"visitor_uuid": "ade7e1f63bc83c66", "subject_doc_id": "doc1"},
-    {"visitor_uuid": "ade7e1f63bc83c66", "subject_doc_id": "doc3"},
-    {"visitor_uuid": "user3", "subject_doc_id": "doc2"},
-    {"visitor_uuid": "user3", "subject_doc_id": "doc3"},
-    {"visitor_uuid": "user4", "subject_doc_id": "doc3"},
-    {"visitor_uuid": "user4", "subject_doc_id": "doc4"},
-    {"visitor_uuid": "user5", "subject_doc_id": "doc1"},
-    {"visitor_uuid": "user5", "subject_doc_id": "doc4"},
-    {"visitor_uuid": "user6", "subject_doc_id": "doc2"},
-    {"visitor_uuid": "user7", "subject_doc_id": "doc2"},
-    {"visitor_uuid": "user7", "subject_doc_id": "doc5"},
-    {"visitor_uuid": "user8", "subject_doc_id": "doc5"},
-    {"visitor_uuid": "user9", "subject_doc_id": "doc1"},
-    {"visitor_uuid": "user9", "subject_doc_id": "doc6"},
-    {"visitor_uuid": "user10", "subject_doc_id": "doc6"}
-]
-# readerr = Reader('dataset.json')
-# df = readerr.concatenate_chunks()
-df = pd.DataFrame(data)
-
-# Instantiate your also_like class
-reader = AlsoLike(df)
-
-# Test get_visitor_uuid method
-print("Visitors for doc1:", reader.get_visitor_uuid("doc1"))
-
-# Test get_document_uuid method
-print("Documents read by user3:", reader.get_document_uuid("user3"))
-
-# Test get_also_like method
-also_likes_for_doc1 = reader.get_also_like("doc1")
-print("Also like documents for doc1:", also_likes_for_doc1)
-
-# Test generate_graph method (if implemented)
-# This will create a graph visualization as a PDF
-graph_path = reader.generate_graph("doc1")
-print("Graph generated at:", graph_path)
