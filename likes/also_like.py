@@ -74,7 +74,7 @@ class AlsoLike:
             graph.node(doc[-4:], shape="box")
             visitor = self.get_visitor_uuid(doc)
             for v in visitor:
-                if reader != visitor_uuid:
+                if v != visitor_uuid:
                     graph.node(v[-4:])
                     graph.edge(v[-4:], doc[-4:])
         output_path = 'graph'
