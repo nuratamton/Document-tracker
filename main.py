@@ -1,5 +1,5 @@
-# import sys
-# print(sys.argv)
+import sys
+print(sys.argv)
 
 # from data_op.data_loader import Reader
 # file = "datasets/sample_3m_lines.json"

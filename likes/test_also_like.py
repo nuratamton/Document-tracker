@@ -30,3 +30,5 @@ def al_instance():
 def test_get_collection_of_visitors_from_doc(al_instance):
     reader = al_instance.AlsoLike(df)
     assert reader.get_visitor_uuid("doc1") == []
+
+def 

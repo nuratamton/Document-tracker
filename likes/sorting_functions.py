@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-class sorting_doc_functions:
+class SortingDocFunctions:
 
     def __init__(self, data_frame):
         self.data = data_frame

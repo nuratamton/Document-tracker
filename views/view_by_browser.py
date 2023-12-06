@@ -79,5 +79,21 @@ class BrowserCount:
         plt.tight_layout()     
         return fig ,index_table
     
+    def device_used(data):
+        data['device_used'] = [
+                                "Mobile" if parse(device).is_mobile else 
+                                "PC" if parse(device).is_pc else
+                                "Tablet" if parse(device).is_tablet else
+                                "Other"
+                                for device in data["visitor_useragent"]
+                                ]
+        device_count = data['device_used'].value_counts()
+        fig, ax = plt.figure(figsize=(8, 6))
+        colors = ["#483D8B", "#6A5ACD", "#9370DB", "#7B68EE"]
+        ax = plt.pie(device_count, labels=device_count.index, autopct="%1.1f%%", startangle=180,colors=colors)
+        ax.set_title('Percentage of Each Device Used')
+        return fig
+
+    
 
 

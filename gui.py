@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import graphviz
 import time
 
+from likes.sorting_functions import SortingDocFunctions
 from views.view_by_country import CountryContinent
 from views.view_by_browser import BrowserCount
 from likes.also_like import AlsoLike
@@ -241,16 +242,22 @@ def display_also_like():
         st.write("Data not loaded yet")
 
     also_like = AlsoLike(data)
-
+    sort = SortingDocFunctions(data)
     st.button('⬅ Back', on_click=navigate_to_options)
     st.title(''' :rainbow[Document Tracker] :bar_chart:''')
     st.subheader("View 'Also Liked'")
     document_uuid = st.text_input('Enter Document UUID:')
     visitor_uuid = st.text_input('Enter Visitor UUID:')
-    sorting = st.selectbox()
+    sorting = st.selectbox("Select Sorting Method:", ("Default", "Country Diversity Score"))
+
+    if(sorting == "Country Diversity Score"):
+        sorting = sort.sort_by_country_diversity_score
+    else:
+        sorting = None
+
     if document_uuid:
-        also_likes_list = also_like.get_also_like(doc_id=document_uuid, visitor_uuid=visitor_uuid)
-        if also_likes_list.size > 0:
+        also_likes_list = also_like.get_also_like(doc_id=document_uuid, sorting_function=sorting, visitor_uuid=visitor_uuid)
+        if len(also_likes_list)>0:
             # Convert list to DataFrame for display
             df = pd.DataFrame({'Recommended Documents': also_likes_list}, index=range(1, len(also_likes_list) + 1))
             st.subheader("Other readers of this document also like:")
@@ -258,7 +265,7 @@ def display_also_like():
         else:
             st.write("No recommendations available for this document.")
 
-        also_likes_graph = also_like.generate_graph(doc_id=document_uuid, visitor_uuid=visitor_uuid)
+        also_likes_graph = also_like.generate_graph(doc_id=document_uuid, visitor_uuid=visitor_uuid, sorting_function=sorting)
             # to display the image
         st.image(also_likes_graph+".png")
 
