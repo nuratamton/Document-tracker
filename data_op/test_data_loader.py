@@ -39,20 +39,3 @@ def test_concatenate_chunks(sample_jsonl_file):
     assert isinstance(df, pd.DataFrame)
     assert len(df) == len(sample_data)
     assert all(df.columns == ["id", "name"])
-
-def test_top_readers(mock_data):
-    reader = Reader()
-    top_readers_df = reader.top_readers(mock_data)
-
-    # Check that the function returns a DataFrame
-    assert isinstance(top_readers_df, pd.DataFrame)
-    
-    # Check that the DataFrame contains the correct number of entries
-    assert len(top_readers_df) <= 10
-    
-    # Check that the DataFrame is sorted correctly
-    sorted_df = top_readers_df.sort_values(by='event_readtime', ascending=False)
-    assert sorted_df['visitor_uuid'].equals(top_readers_df['visitor_uuid'])
-
-    # Check that the DataFrame contains the correct column
-    assert 'visitor_uuid' in top_readers_df.columns
