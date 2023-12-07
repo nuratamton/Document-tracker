@@ -62,3 +62,29 @@ class CountryContinent:
         fig_cont = self.plot_hist(continents, "Continents")
         return fig_country, fig_cont
     
+    def plot_pie(self, data, label):
+        # count the number of times each unique value occurs in the data
+        data_counts = data.value_counts()
+
+        # set up the colors for the pie chart
+        colors = ["#483D8B", "#6A5ACD", "#9370DB", "#7B68EE"]
+        # create figure and subplots
+        fig, ax = plt.subplots(figsize=(8, 8))
+        # create pie chart
+        ax.pie(data_counts, labels=data_counts.index, autopct='%1.1f%%', startangle=140, colors=colors)
+        # set the title
+        ax.set_title(f"View by {label}")
+        return fig
+    
+    def country_cont_pie(self, uuid, data):
+        # gets the selected UUID from the data
+        selected_uuid = data[data['env_doc_id'] == uuid]
+        # selects the country column after filtering data
+        countries = selected_uuid['visitor_country']
+        # to plot the pie chart for viewers by country
+        fig_country_pie = self.plot_pie(countries, "Countries")
+        # continent names using the mapping dictionary
+        continents = countries.map(self.country_cont_dict)
+        # to plot the pie chart for viewers by continent
+        fig_continent_pie = self.plot_pie(continents, "Continents")
+        return fig_country_pie, fig_continent_pie
