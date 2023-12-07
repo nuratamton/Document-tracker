@@ -56,21 +56,26 @@ class AlsoLike:
     
     # function to generate the also-like graph
     def generate_graph(self, doc_id, sorting_function = None ,visitor_uuid = None ):
+        # we initialize a digraph
         graph = Digraph(comment="graph")
+        # if the doc_id given is in the dataset only then, initialize the doc_id node
         if not self.data_frame[self.data_frame['env_doc_id'] == doc_id].empty:
             graph.node(doc_id[-4:],style = 'filled',fillcolor="darkslategrey",shape='box')
-
+        # get all the visitors of the selected doc using the defined get_visitor_uuid
         input_doc_visitors = self.get_visitor_uuid(doc_id)
+        # if the user has passed the visitor uuid, then we make that a node and make a connection to the doc_id node
         if visitor_uuid and visitor_uuid in input_doc_visitors:
             graph.node(visitor_uuid[-4:],style = 'filled',fillcolor='darkslategrey')
             graph.edge(visitor_uuid[-4:], doc_id[-4:])
+            # in this case, we will have only one visitor_uuid
             input_doc_visitors = {visitor_uuid}
-        
+        # iterate through the visitors and make a node for them and connect them to the input doc_id node
         for v in input_doc_visitors:
+            # we do this to ensure that we dont have a duplicate of visitor_uuid node
             if v != visitor_uuid:
                 graph.node(v[-4:], style ='filled', fillcolor="magenta")
             graph.edge(v[-4:], doc_id[-4:])
-            
+        # get the also_liked documents and make a node for each one and get their visitors
         for doc in self.get_also_like(doc_id,sorting_function,visitor_uuid):
             graph.node(doc[-4:], shape="box")
             visitor = self.get_visitor_uuid(doc)
@@ -78,6 +83,7 @@ class AlsoLike:
                 if v != visitor_uuid:
                     graph.node(v[-4:])
                     graph.edge(v[-4:], doc[-4:])
+        # output a pdf and a png of the graph
         output_path = 'graph'
         output_path2 = 'graph_image'
         graph.render(output_path, format='pdf', cleanup=True)
