@@ -24,6 +24,9 @@ def main():
     pd = reader.concatenate_chunks()
     doc_id = args.doc_uuid
     uid = args.user_uuid
+    # pd[''] = pd['p'].astype(str)
+    
+
     if not pd['visitor_uuid'].isin([uid]).any():
         uid = None
 
@@ -50,12 +53,7 @@ def main():
     elif(args.task_id == "5d"):
         also_like_obj = AlsoLike(pd)
         also_liked = also_like_obj.get_also_like(doc_id,None,uid)
-        if(also_like.shape == (0,)):
-            print("There are no also liked docments.")
-        else:
-            plt.imshow(also_liked, cmap='gray')
-            plt.axis('off')
-            plt.show()
+        print(also_liked)
     elif(args.task_id == "6"):
         also_like = AlsoLike(pd)
         generate_graph = also_like.generate_graph(doc_id,None,uid)
