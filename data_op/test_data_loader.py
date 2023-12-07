@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import json
 from .data_loader import Reader
-
+# hand crafted dataset - work of art
 sample_data = [
     {"id": 1, "name": "John Doe"},
     {"id": 2, "name": "Jane Doe"},
@@ -19,27 +19,28 @@ def mock_data():
     })
 
 @pytest.fixture(scope="module")
+# write the hand crafted data to a new json file
 def sample_jsonl_file(tmp_path_factory):
     data_file = tmp_path_factory.mktemp("data") / "sample.jsonl"
     with open(data_file, "w") as f:
         for item in sample_data:
             f.write(json.dumps(item) + "\n")
     return str(data_file)
-
+# test for if the function load_data reads the json file properly in chuncks
 def test_load_data(sample_jsonl_file):
     reader = Reader(sample_jsonl_file, batch_size=2)
     chunks = reader.load_data()
     for chunk in chunks:
         assert isinstance(chunk, pd.DataFrame)
         assert not chunk.empty
-
+# test for if these chunks are concatenated appropriately
 def test_concatenate_chunks(sample_jsonl_file):
     reader = Reader(sample_jsonl_file, batch_size=2)
     df = reader.concatenate_chunks()
     assert isinstance(df, pd.DataFrame)
     assert len(df) == len(sample_data)
     assert all(df.columns == ["id", "name"])
-
+# test to check if top_readers has the correct values and is sorted
 def test_top_readers(mock_data):
     reader = Reader()
     top_readers_df = reader.top_readers(mock_data)

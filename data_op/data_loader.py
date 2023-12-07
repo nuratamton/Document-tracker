@@ -6,7 +6,7 @@ class Reader:
     def __init__(self, file, batch_size = 10000):
         self.file = file
         self.batch_size = batch_size
-
+    # we load the data in chunks
     def load_data(self):
         try:
             reader = pd.read_json(self.file, lines=True, chunksize=self.batch_size)
@@ -15,7 +15,7 @@ class Reader:
             print(f"ValueError: {e}")
         except Exception as e:
             print(f"Unexpected error: {e}")
-
+    #we concatenate these chuncks to read the whole dataset without overloading the memory
     def concatenate_chunks(self):
         chunks = []
         try:
