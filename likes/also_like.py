@@ -86,6 +86,6 @@ class AlsoLike:
         # output a pdf and a png of the graph
         output_path = 'graph'
         output_path2 = 'graph_image'
-        graph.render(output_path, format='pdf', cleanup=True)
+        # graph.render(output_path, format='pdf', cleanup=True)
         graph.render(output_path2, format='png', cleanup=True)
         return output_path2
